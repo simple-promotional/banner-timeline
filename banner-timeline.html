@@ -54,7 +54,6 @@
               url="{{src}}"
               handle-as="json"
               last-response="{{entries}}">
-
       </iron-ajax>
 
       <header>
@@ -67,7 +66,7 @@
         <grid-lines grid-number={{gridCols}} scale={{scale}} start="{{start}}" end="{{end}}"></grid-lines>
         <div class="entries">
           <template is="dom-repeat" items="{{entries}}" id="entryListContainer">
-            <banner-entry content="[[item]]" position="[[_getPos('2017-06-02', '2017-06-07', start, index)]]" scale=[[scale]] id="[[item.id]]" selected="{{selected}}"></banner-entry>
+            <banner-entry content="[[item]]" position="[[_getPos(item.startDate, item.endDate, start, index)]]" scale=[[scale]] id="[[item.id]]" selected="{{selected}}"></banner-entry>
           </template>
         </div>
       </div>
@@ -86,14 +85,17 @@
           end: new Date(testEntry.endDate)
         }
       }
-      return (index<=i && (dates.testEntry.start>=dates.entry.start && dates.testEntry.start<=dates.entry.end))
+      //(StartA <= EndB) and (EndA >= StartB)
+      return (index<=i && (dates.entry.start<=dates.testEntry.end && dates.entry.end>=dates.testEntry.start))
     });
     return (overlaps.length);
   }
     Polymer({
       is: "banner-timeline",
       _getPos: function(start, end, rangeStart, index) {
-        var day = 60 * 60 * 24 * 1000;
+        var day = 60 * 60 * 24 * 1000,
+            os = new Date().getTimezoneOffset() * 60000;
+
         return {
           left: ((new Date(start)-new Date(rangeStart))/day * 10),
           width: ((new Date(end)-new Date(start))/day * 10),
@@ -109,7 +111,7 @@
           value: function() {
             var props = this.properties,
                 day = 60 * 60 * 24 * 1000,
-                noDays = (new Date(props.end.value)-new Date(props.start.value))/day
+                noDays = (new Date(props.end.value)-new Date(props.start.value))/day;
             return (noDays>365 ? 365 : noDays)
           }
         },

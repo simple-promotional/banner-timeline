@@ -131,7 +131,7 @@
         var monthIndex = date.getMonth();
         var year = date.getFullYear();
 
-        return day + ' ' + monthNames[monthIndex] + ' ' + year;
+        return day + ' ' + monthList[monthIndex] + ' ' + year;
       }
       var GridLine = function(index, startDate) {
         var gl = document.createElement('div'),
@@ -154,8 +154,8 @@
 
       return {
         build: function(el, startDate, endDate) {
-          var n = (new Date(endDate) - new Date(startDate))/day;
-          var target = el.$.grid_target;
+          var n = Math.min((new Date(endDate) - new Date(startDate))/day,365),
+              target = el.$.grid_target;
           target.innerHTML="";
           for(var i = 0; i<n; i++) {
             target.appendChild(new GridLine(i, startDate));
